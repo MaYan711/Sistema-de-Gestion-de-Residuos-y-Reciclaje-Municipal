@@ -15,4 +15,9 @@ class Usuario extends Authenticatable
 
     protected $hidden = ['password'];
     protected $guarded = [];
+
+    public function rol()
+    {
+        return $this->belongsTo(Rol::class, 'id_rol', 'id_rol');
+    }
 }

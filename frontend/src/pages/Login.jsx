@@ -16,8 +16,7 @@ export default function Login() {
     
     try {
        const { data } = await api.post('/login', { email, password })
-      login(data.token)
-      //login('demo-token')
+      login(data.token, data.usuario)
       nav('/')
     } catch (err) {
       setError('No se pudo iniciar sesión')
