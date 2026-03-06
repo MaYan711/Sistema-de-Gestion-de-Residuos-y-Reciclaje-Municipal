@@ -5,6 +5,8 @@ import Mapa from './pages/Mapa.jsx'
 import { AuthProvider } from './auth/AuthContext.jsx'
 import ProtectedRoute from './auth/ProtectedRoute.jsx'
 import Navbar from './components/layout/Navbar.jsx'
+import Denuncias from "./pages/Denuncias.jsx";
+import Seguimiento from "./pages/Seguimiento.jsx";
 
 export default function App() {
   return (
@@ -20,6 +22,15 @@ export default function App() {
           path="/mapa"
           element={<ProtectedRoute><Mapa /></ProtectedRoute>}
         />
+                <Route
+          path="/denuncias"
+          element={
+            <ProtectedRoute>
+              <Denuncias />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/seguimiento" element={<Seguimiento />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AuthProvider>

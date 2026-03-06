@@ -286,12 +286,12 @@ export default function Mapa() {
               </button>
 
               <button
-  className="btn"
-  type="button"
-  onClick={() => setConfirmDelete(true)}
->
-  Eliminar
-</button>
+          className="btn"
+          type="button"
+          onClick={() => setConfirmDelete(true)}
+        >
+          Eliminar
+        </button>
 
 {confirmDelete && (
   <div style={{marginTop:10, padding:10, border:"1px solid rgba(255,255,255,0.1)", borderRadius:8}}>

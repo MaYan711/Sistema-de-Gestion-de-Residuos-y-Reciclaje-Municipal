@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../auth/AuthContext.jsx'
 import { api } from '../../api/axios.js'
+import { NavLink } from "react-router-dom";
 
 export default function Navbar() {
   const { isAuthed, logout } = useAuth()
@@ -8,10 +9,10 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     try {
-      // invalida tokens en el backend (Sanctum)
+      
       await api.post('/logout')
     } catch (e) {
-      // si falla, igual cerramos sesión local (token inválido/expirado, backend caído, etc.)
+      
       console.log('Logout error:', e?.response?.data || e.message)
     } finally {
       logout()
@@ -34,8 +35,9 @@ export default function Navbar() {
           <strong>ResiduosMuni</strong>
           {isAuthed && (
             <>
-              <Link to="/">Dashboard</Link>
-              <Link to="/mapa">Mapa</Link>
+              <NavLink to="/">Dashboard</NavLink>
+              <NavLink to="/mapa">Mapa</NavLink>
+              <NavLink to="/denuncias">Denuncias</NavLink>
             </>
           )}
         </div>
