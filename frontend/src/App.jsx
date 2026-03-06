@@ -7,6 +7,7 @@ import ProtectedRoute from './auth/ProtectedRoute.jsx'
 import Navbar from './components/layout/Navbar.jsx'
 import Denuncias from "./pages/Denuncias.jsx";
 import Seguimiento from "./pages/Seguimiento.jsx";
+import SeguimientoDenuncia from "./pages/SeguimientoDenuncia.jsx";
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
       <Navbar />
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/seguimiento-denuncia" element={<SeguimientoDenuncia />} />
         <Route
           path="/"
           element={<ProtectedRoute><Dashboard /></ProtectedRoute>}
@@ -30,7 +32,10 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+
+        
         <Route path="/seguimiento" element={<Seguimiento />} />
+        
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AuthProvider>

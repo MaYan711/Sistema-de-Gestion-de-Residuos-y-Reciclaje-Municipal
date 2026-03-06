@@ -81,4 +81,32 @@ class DenunciaController extends Controller
             'data' => $this->service->changeEstado((int)$id, $data['estado'], (int)$userId, $data['observaciones'] ?? null)
         ]);
     }
+
+    public function assign(Request $request, $id)
+{
+    $data = $request->validate([
+        'id_cuadrilla' => ['required', 'integer'],
+        'fecha_programada' => ['required', 'date'],
+        'recursos' => ['nullable', 'string'],
+    ]);
+
+    $userId = $request->user()->id_usuario ?? $request->user()->id;
+
+    return response()->json([
+        'data' => $this->service->assign(
+            (int) $id,
+            (int) $data['id_cuadrilla'],
+            $data['fecha_programada'],
+            (int) $userId,
+            $data['recursos'] ?? null
+        )
+    ]);
+}
+
+public function seguimientoPublico($codigo)
+{
+    return response()->json([
+        'data' => $this->service->getSeguimientoPublico($codigo)
+    ]);
+}
 }
