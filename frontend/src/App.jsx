@@ -11,6 +11,7 @@ import Seguimiento from './pages/Seguimiento.jsx'
 import SeguimientoDenuncia from './pages/SeguimientoDenuncia.jsx'
 import Rutas from './pages/Rutas.jsx'
 import Camiones from './pages/Camiones.jsx'
+import AsignacionesRuta from './pages/AsignacionesRuta.jsx'
 
 export default function App() {
   return (
@@ -51,6 +52,15 @@ export default function App() {
           element={
             <ProtectedRoute>
               <Camiones />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/asignaciones-ruta"
+          element={
+            <ProtectedRoute>
+              <AsignacionesRuta />
             </ProtectedRoute>
           }
         />

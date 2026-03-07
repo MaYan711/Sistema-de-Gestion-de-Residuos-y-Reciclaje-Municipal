@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\CuadrillaController;
 use App\Http\Controllers\Api\ZonaController;
 use App\Http\Controllers\Api\RutaController;
 use App\Http\Controllers\Api\CamionController;
+use App\Http\Controllers\Api\AsignacionRutaController;
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/denuncias/seguimiento/{codigo}', [DenunciaController::class, 'seguimientoPublico']);
@@ -62,4 +63,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/camiones', [CamionController::class, 'store']);
     Route::put('/camiones/{id}', [CamionController::class, 'update']);
     Route::delete('/camiones/{id}', [CamionController::class, 'destroy']);
+
+     Route::get('/asignaciones-ruta', [AsignacionRutaController::class, 'index']);
+    Route::get('/asignaciones-ruta/rutas-disponibles', [AsignacionRutaController::class, 'rutasDisponibles']);
+    Route::get('/asignaciones-ruta/camiones-disponibles', [AsignacionRutaController::class, 'camionesDisponibles']);
+    Route::get('/asignaciones-ruta/{id}', [AsignacionRutaController::class, 'show']);
+    Route::post('/asignaciones-ruta', [AsignacionRutaController::class, 'store']);
+    Route::put('/asignaciones-ruta/{id}', [AsignacionRutaController::class, 'update']);
+    Route::delete('/asignaciones-ruta/{id}', [AsignacionRutaController::class, 'destroy']);
 });

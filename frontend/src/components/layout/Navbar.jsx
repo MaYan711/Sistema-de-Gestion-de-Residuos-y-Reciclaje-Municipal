@@ -38,6 +38,7 @@ export default function Navbar() {
               <NavLink to="/zonas">Zonas</NavLink>
               <NavLink to="/rutas">Rutas</NavLink>
               <NavLink to="/camiones">Camiones</NavLink>
+              <NavLink to="/asignaciones-ruta">Asignaciones</NavLink>
               <NavLink to="/denuncias">Denuncias</NavLink>
               <NavLink to="/seguimiento">Seguimiento</NavLink>
               
