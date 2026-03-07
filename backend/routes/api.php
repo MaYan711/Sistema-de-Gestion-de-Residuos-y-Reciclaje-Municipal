@@ -8,6 +8,9 @@ use App\Http\Controllers\Api\DenunciaController;
 use App\Http\Controllers\Api\DenunciaPublicController;
 use App\Http\Controllers\Api\FotoDenunciaController;
 use App\Http\Controllers\Api\CuadrillaController;
+use App\Http\Controllers\Api\ZonaController;
+use App\Http\Controllers\Api\RutaController;
+use App\Http\Controllers\Api\CamionController;
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/denuncias/seguimiento/{codigo}', [DenunciaController::class, 'seguimientoPublico']);
@@ -38,5 +41,25 @@ Route::middleware('auth:sanctum')->group(function () {
     //Route::get('/denuncias/seguimiento/{codigo}', [DenunciaController::class, 'seguimientoPublico'])->withoutMiddleware(['auth:sanctum']);
 
     Route::get('/cuadrillas', [CuadrillaController::class, 'index']);
+
+     Route::get('/zonas', [ZonaController::class, 'index']);
+    Route::get('/zonas/{id}', [ZonaController::class, 'show']);
+    Route::post('/zonas', [ZonaController::class, 'store']);
+    Route::put('/zonas/{id}', [ZonaController::class, 'update']);
+    Route::delete('/zonas/{id}', [ZonaController::class, 'destroy']);
+    Route::patch('/zonas/{id}/restore', [ZonaController::class, 'restore']);
+
+    Route::get('/rutas', [RutaController::class, 'index']);
+    Route::get('/rutas/{id}', [RutaController::class, 'show']);
+    Route::post('/rutas', [RutaController::class, 'store']);
+    Route::put('/rutas/{id}', [RutaController::class, 'update']);
+    Route::delete('/rutas/{id}', [RutaController::class, 'destroy']);
+    Route::patch('/rutas/{id}/restore', [RutaController::class, 'restore']);
     
+    Route::get('/camiones', [CamionController::class, 'index']);
+    Route::get('/camiones/conductores', [CamionController::class, 'conductores']);
+    Route::get('/camiones/{id}', [CamionController::class, 'show']);
+    Route::post('/camiones', [CamionController::class, 'store']);
+    Route::put('/camiones/{id}', [CamionController::class, 'update']);
+    Route::delete('/camiones/{id}', [CamionController::class, 'destroy']);
 });

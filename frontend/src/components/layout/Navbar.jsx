@@ -1,7 +1,6 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, NavLink } from 'react-router-dom'
 import { useAuth } from '../../auth/AuthContext.jsx'
 import { api } from '../../api/axios.js'
-import { NavLink } from "react-router-dom";
 
 export default function Navbar() {
   const { isAuthed, logout } = useAuth()
@@ -9,10 +8,8 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     try {
-      
       await api.post('/logout')
     } catch (e) {
-      
       console.log('Logout error:', e?.response?.data || e.message)
     } finally {
       logout()
@@ -33,11 +30,17 @@ export default function Navbar() {
       >
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
           <strong>ResiduosMuni</strong>
+
           {isAuthed && (
             <>
               <NavLink to="/">Dashboard</NavLink>
               <NavLink to="/mapa">Mapa</NavLink>
+              <NavLink to="/zonas">Zonas</NavLink>
+              <NavLink to="/rutas">Rutas</NavLink>
+              <NavLink to="/camiones">Camiones</NavLink>
               <NavLink to="/denuncias">Denuncias</NavLink>
+              <NavLink to="/seguimiento">Seguimiento</NavLink>
+              
             </>
           )}
         </div>
