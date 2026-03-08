@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\ZonaController;
 use App\Http\Controllers\Api\RutaController;
 use App\Http\Controllers\Api\CamionController;
 use App\Http\Controllers\Api\AsignacionRutaController;
+use App\Http\Controllers\Api\RecoleccionController;
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/denuncias/seguimiento/{codigo}', [DenunciaController::class, 'seguimientoPublico']);
@@ -71,4 +72,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/asignaciones-ruta', [AsignacionRutaController::class, 'store']);
     Route::put('/asignaciones-ruta/{id}', [AsignacionRutaController::class, 'update']);
     Route::delete('/asignaciones-ruta/{id}', [AsignacionRutaController::class, 'destroy']);
+
+    Route::get('/recolecciones', [RecoleccionController::class, 'index']);
+    Route::get('/recolecciones/asignaciones-disponibles', [RecoleccionController::class, 'asignacionesDisponibles']);
+    Route::get('/recolecciones/{id}', [RecoleccionController::class, 'show']);
+    Route::post('/recolecciones', [RecoleccionController::class, 'store']);
+    Route::put('/recolecciones/{id}', [RecoleccionController::class, 'update']);
+    Route::delete('/recolecciones/{id}', [RecoleccionController::class, 'destroy']);
 });

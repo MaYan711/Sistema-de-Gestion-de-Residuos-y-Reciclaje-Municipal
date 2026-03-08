@@ -12,6 +12,7 @@ import SeguimientoDenuncia from './pages/SeguimientoDenuncia.jsx'
 import Rutas from './pages/Rutas.jsx'
 import Camiones from './pages/Camiones.jsx'
 import AsignacionesRuta from './pages/AsignacionesRuta.jsx'
+import Recolecciones from './pages/Recolecciones.jsx'
 
 export default function App() {
   return (
@@ -73,6 +74,15 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route
+        path="/recolecciones"
+        element={
+          <ProtectedRoute>
+            <Recolecciones />
+          </ProtectedRoute>
+        }
+      />
 
         <Route
           path="/rutas"

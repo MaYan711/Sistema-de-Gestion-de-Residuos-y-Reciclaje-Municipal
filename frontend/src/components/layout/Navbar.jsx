@@ -40,6 +40,7 @@ export default function Navbar() {
               <NavLink to="/camiones">Camiones</NavLink>
               <NavLink to="/asignaciones-ruta">Asignaciones</NavLink>
               <NavLink to="/denuncias">Denuncias</NavLink>
+              <NavLink to="/recolecciones">Recolecciones</NavLink>
               <NavLink to="/seguimiento">Seguimiento</NavLink>
               
             </>
