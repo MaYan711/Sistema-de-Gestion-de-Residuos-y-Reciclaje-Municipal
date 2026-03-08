@@ -13,6 +13,8 @@ import Rutas from './pages/Rutas.jsx'
 import Camiones from './pages/Camiones.jsx'
 import AsignacionesRuta from './pages/AsignacionesRuta.jsx'
 import Recolecciones from './pages/Recolecciones.jsx'
+import PortalRutas from './pages/PortalRutas.jsx'
+import MonitoreoAsignaciones from './pages/MonitoreoAsignaciones.jsx'
 
 export default function App() {
   return (
@@ -20,6 +22,7 @@ export default function App() {
       <Navbar />
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/portal-rutas" element={<PortalRutas />} />
         <Route path="/seguimiento-denuncia" element={<SeguimientoDenuncia />} />
 
         <Route
@@ -62,6 +65,15 @@ export default function App() {
           element={
             <ProtectedRoute>
               <AsignacionesRuta />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/monitoreo-asignaciones"
+          element={
+            <ProtectedRoute>
+              <MonitoreoAsignaciones />
             </ProtectedRoute>
           }
         />

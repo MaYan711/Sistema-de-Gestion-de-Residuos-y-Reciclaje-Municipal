@@ -14,6 +14,12 @@ use App\Http\Controllers\Api\CamionController;
 use App\Http\Controllers\Api\AsignacionRutaController;
 use App\Http\Controllers\Api\RecoleccionController;
 
+use App\Http\Controllers\Api\PortalRutaPublicController;
+
+Route::get('/portal-rutas/zonas', [PortalRutaPublicController::class, 'zonas']);
+Route::get('/portal-rutas', [PortalRutaPublicController::class, 'rutas']);
+Route::get('/portal-rutas/{id}', [PortalRutaPublicController::class, 'show']);
+
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/denuncias/seguimiento/{codigo}', [DenunciaController::class, 'seguimientoPublico']);
 

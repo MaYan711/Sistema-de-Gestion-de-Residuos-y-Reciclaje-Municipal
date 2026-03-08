@@ -28,24 +28,25 @@ export default function Navbar() {
           justifyContent: 'space-between',
         }}
       >
-        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <strong>ResiduosMuni</strong>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+        <strong>ResiduosMuni</strong>
+        <NavLink to="/portal-rutas">Portal Rutas</NavLink>
 
-          {isAuthed && (
-            <>
-              <NavLink to="/">Dashboard</NavLink>
-              <NavLink to="/mapa">Mapa</NavLink>
-              <NavLink to="/zonas">Zonas</NavLink>
-              <NavLink to="/rutas">Rutas</NavLink>
-              <NavLink to="/camiones">Camiones</NavLink>
-              <NavLink to="/asignaciones-ruta">Asignaciones</NavLink>
-              <NavLink to="/denuncias">Denuncias</NavLink>
-              <NavLink to="/recolecciones">Recolecciones</NavLink>
-              <NavLink to="/seguimiento">Seguimiento</NavLink>
-              
-            </>
-          )}
-        </div>
+        {isAuthed && (
+       <>
+      <NavLink to="/">Dashboard</NavLink>
+      <NavLink to="/mapa">Mapa</NavLink>
+      <NavLink to="/zonas">Zonas</NavLink>
+      <NavLink to="/rutas">Rutas</NavLink>
+      <NavLink to="/camiones">Camiones</NavLink>
+      <NavLink to="/asignaciones-ruta">Asignaciones</NavLink>
+      <NavLink to="/recolecciones">Recolecciones</NavLink>
+      <NavLink to="/denuncias">Denuncias</NavLink>
+      <NavLink to="/seguimiento">Seguimiento</NavLink>
+      <NavLink to="/monitoreo-asignaciones">Monitoreo</NavLink>
+      </>
+      )}
+     </div>
 
         <div>
           {isAuthed ? (
