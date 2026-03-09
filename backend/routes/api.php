@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\AsignacionRutaController;
 use App\Http\Controllers\Api\RecoleccionController;
 
 use App\Http\Controllers\Api\PortalRutaPublicController;
+use App\Http\Controllers\Api\PuntoRecoleccionController;
 
 Route::get('/portal-rutas/zonas', [PortalRutaPublicController::class, 'zonas']);
 Route::get('/portal-rutas', [PortalRutaPublicController::class, 'rutas']);
@@ -85,4 +86,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/recolecciones', [RecoleccionController::class, 'store']);
     Route::put('/recolecciones/{id}', [RecoleccionController::class, 'update']);
     Route::delete('/recolecciones/{id}', [RecoleccionController::class, 'destroy']);
+
+    Route::patch('/puntos-recoleccion/{id}/recolectado', [PuntoRecoleccionController::class, 'marcarRecolectado']);
+    Route::patch('/puntos-recoleccion/{id}/pendiente', [PuntoRecoleccionController::class, 'desmarcarRecolectado']);
 });

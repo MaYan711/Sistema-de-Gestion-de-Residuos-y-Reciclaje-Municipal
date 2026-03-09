@@ -41,21 +41,22 @@ const iconoFin = new L.DivIcon({
   iconAnchor: [7, 7],
 });
 
-const iconoPuntoRecoleccion = new L.DivIcon({
-  className: "",
-  html: `
-    <div style="
-      width:12px;
-      height:12px;
-      border-radius:50%;
-      background:#16a34a;
-      border:2px solid white;
-      box-shadow:0 0 0 1px rgba(0,0,0,0.25);
-    "></div>
-  `,
-  iconSize: [12, 12],
-  iconAnchor: [6, 6],
-});
+const crearIconoPunto = (recolectado) =>
+  new L.DivIcon({
+    className: "",
+    html: `
+      <div style="
+        width:12px;
+        height:12px;
+        border-radius:50%;
+        background:${recolectado ? "#2563eb" : "#16a34a"};
+        border:2px solid white;
+        box-shadow:0 0 0 1px rgba(0,0,0,0.25);
+      "></div>
+    `,
+    iconSize: [12, 12],
+    iconAnchor: [6, 6],
+  });
 
 export default function AsignacionMap({ asignacion }) {
   const center = useMemo(() => {
@@ -115,7 +116,7 @@ export default function AsignacionMap({ asignacion }) {
         <div style={{ width: "100%", height: "560px" }}>
           <MapContainer center={center} zoom={13} style={{ width: "100%", height: "100%" }}>
             <TileLayer
-              attribution='&copy; OpenStreetMap contributors'
+              attribution="&copy; OpenStreetMap contributors"
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
 
@@ -160,7 +161,7 @@ export default function AsignacionMap({ asignacion }) {
               <Marker
                 key={punto.id_punto}
                 position={[punto.latitud, punto.longitud]}
-                icon={iconoPuntoRecoleccion}
+                icon={crearIconoPunto(punto.recolectado)}
               >
                 <Tooltip direction="top">
                   Punto #{punto.orden}
@@ -168,6 +169,8 @@ export default function AsignacionMap({ asignacion }) {
                   Volumen: {punto.volumen_estimado} kg
                   <br />
                   Estado: {punto.recolectado ? "Recolectado" : "Pendiente"}
+                  <br />
+                  Hora: {punto.hora_recoleccion ?? "—"}
                 </Tooltip>
               </Marker>
             ))}

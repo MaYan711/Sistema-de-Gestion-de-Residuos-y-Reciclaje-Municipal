@@ -1,17 +1,37 @@
 import { useEffect, useState } from "react";
 import AsignacionMap from "../components/monitoreo/AsignacionMap";
 import AsignacionSelector from "../components/monitoreo/AsignacionSelector";
-import { getAsignacionDetalleMonitoreo, getAsignacionesMonitoreo } from "../api/monitoreo-rutas.service";
+import PuntosRecoleccionTable from "../components/monitoreo/PuntosRecoleccionTable";
+import {
+  getAsignacionDetalleMonitoreo,
+  getAsignacionesMonitoreo,
+} from "../api/monitoreo-rutas.service";
+import {
+  marcarPuntoPendiente,
+  marcarPuntoRecolectado,
+} from "../api/puntos-recoleccion.service";
+import AppMessage from "../components/common/AppMessage";
 
 export default function MonitoreoAsignaciones() {
   const [asignaciones, setAsignaciones] = useState([]);
   const [asignacionSeleccionada, setAsignacionSeleccionada] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("success");
   const [filtros, setFiltros] = useState({
     fecha_asig: "",
     id_ruta: "",
     id_camion: "",
   });
+
+  const mostrarMensaje = (texto, tipo = "success") => {
+    setMessage(texto);
+    setMessageType(tipo);
+  };
+
+  const limpiarMensaje = () => {
+    setMessage("");
+  };
 
   const cargarAsignaciones = async () => {
     setLoading(true);
@@ -34,6 +54,7 @@ export default function MonitoreoAsignaciones() {
       }
     } catch (error) {
       console.error(error);
+      mostrarMensaje("No se pudieron cargar las asignaciones", "danger");
     } finally {
       setLoading(false);
     }
@@ -58,10 +79,55 @@ export default function MonitoreoAsignaciones() {
 
   const handleSeleccionar = async (id) => {
     try {
+      limpiarMensaje();
       const detalle = await getAsignacionDetalleMonitoreo(id);
       setAsignacionSeleccionada(detalle);
     } catch (error) {
       console.error(error);
+      mostrarMensaje("No se pudo cargar el detalle de la asignación", "danger");
+    }
+  };
+
+  const refrescarAsignacionSeleccionada = async () => {
+    if (!asignacionSeleccionada?.id_asignacion) return;
+    const detalle = await getAsignacionDetalleMonitoreo(asignacionSeleccionada.id_asignacion);
+    setAsignacionSeleccionada(detalle);
+  };
+
+  const handleMarcarRecolectado = async (idPunto) => {
+    try {
+      setLoading(true);
+      limpiarMensaje();
+      await marcarPuntoRecolectado(idPunto);
+      await refrescarAsignacionSeleccionada();
+      mostrarMensaje("Punto marcado como recolectado correctamente", "success");
+    } catch (error) {
+      console.error(error);
+      const errores = error?.response?.data?.errors;
+      if (errores) {
+        const primerCampo = Object.keys(errores)[0];
+        const primerMensaje = errores[primerCampo]?.[0];
+        mostrarMensaje(primerMensaje || "No se pudo marcar el punto", "danger");
+      } else {
+        mostrarMensaje("No se pudo marcar el punto", "danger");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleMarcarPendiente = async (idPunto) => {
+    try {
+      setLoading(true);
+      limpiarMensaje();
+      await marcarPuntoPendiente(idPunto);
+      await refrescarAsignacionSeleccionada();
+      mostrarMensaje("Punto marcado como pendiente correctamente", "warning");
+    } catch (error) {
+      console.error(error);
+      mostrarMensaje("No se pudo actualizar el punto", "danger");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -73,6 +139,12 @@ export default function MonitoreoAsignaciones() {
           Visualización de rutas y puntos dinámicos de recolección generados
         </p>
       </div>
+
+      <AppMessage
+        message={message}
+        type={messageType}
+        onClose={limpiarMensaje}
+      />
 
       <div className="card shadow-sm mb-4">
         <div className="card-header">
@@ -167,8 +239,10 @@ export default function MonitoreoAsignaciones() {
               </div>
 
               <div className="col-md-3">
-                <strong>Zona:</strong>
-                <div>{asignacionSeleccionada.ruta?.zona?.nombre ?? "—"}</div>
+                <strong>Recolectados:</strong>
+                <div>
+                  {asignacionSeleccionada.puntos_recoleccion?.filter((p) => p.recolectado).length ?? 0}
+                </div>
               </div>
             </div>
           </div>
@@ -199,6 +273,15 @@ export default function MonitoreoAsignaciones() {
           )}
         </div>
       </div>
+
+      {asignacionSeleccionada && (
+        <PuntosRecoleccionTable
+          puntos={asignacionSeleccionada.puntos_recoleccion ?? []}
+          onMarcarRecolectado={handleMarcarRecolectado}
+          onMarcarPendiente={handleMarcarPendiente}
+          loading={loading}
+        />
+      )}
     </div>
   );
 }
