@@ -15,6 +15,7 @@ import AsignacionesRuta from './pages/AsignacionesRuta.jsx'
 import Recolecciones from './pages/Recolecciones.jsx'
 import PortalRutas from './pages/PortalRutas.jsx'
 import MonitoreoAsignaciones from './pages/MonitoreoAsignaciones.jsx'
+import TiposMaterial from "./pages/TiposMaterial";
 
 export default function App() {
   return (
@@ -104,6 +105,15 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route
+        path="/tipos-material"
+        element={
+          <ProtectedRoute>
+            <TiposMaterial />
+          </ProtectedRoute>
+        }
+      />
 
         <Route path="/seguimiento" element={<Seguimiento />} />
 

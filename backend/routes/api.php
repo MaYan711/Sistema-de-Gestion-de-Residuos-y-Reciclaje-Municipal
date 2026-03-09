@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\RecoleccionController;
 
 use App\Http\Controllers\Api\PortalRutaPublicController;
 use App\Http\Controllers\Api\PuntoRecoleccionController;
+use App\Http\Controllers\Api\TipoMaterialController;
 
 Route::get('/portal-rutas/zonas', [PortalRutaPublicController::class, 'zonas']);
 Route::get('/portal-rutas', [PortalRutaPublicController::class, 'rutas']);
@@ -89,4 +90,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::patch('/puntos-recoleccion/{id}/recolectado', [PuntoRecoleccionController::class, 'marcarRecolectado']);
     Route::patch('/puntos-recoleccion/{id}/pendiente', [PuntoRecoleccionController::class, 'desmarcarRecolectado']);
+
+    Route::get('/tipos-material', [TipoMaterialController::class, 'index']);
+    Route::get('/tipos-material/{id}', [TipoMaterialController::class, 'show']);
+    Route::post('/tipos-material', [TipoMaterialController::class, 'store']);
+    Route::put('/tipos-material/{id}', [TipoMaterialController::class, 'update']);
+    Route::delete('/tipos-material/{id}', [TipoMaterialController::class, 'destroy']);
+    Route::patch('/tipos-material/{id}/restore', [TipoMaterialController::class, 'restore']);
 });
