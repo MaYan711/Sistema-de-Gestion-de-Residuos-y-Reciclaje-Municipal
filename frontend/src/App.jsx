@@ -16,6 +16,7 @@ import Recolecciones from './pages/Recolecciones.jsx'
 import PortalRutas from './pages/PortalRutas.jsx'
 import MonitoreoAsignaciones from './pages/MonitoreoAsignaciones.jsx'
 import TiposMaterial from "./pages/TiposMaterial";
+import Contenedores from "./pages/Contenedores";
 
 export default function App() {
   return (
@@ -111,6 +112,15 @@ export default function App() {
         element={
           <ProtectedRoute>
             <TiposMaterial />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/contenedores"
+        element={
+          <ProtectedRoute>
+            <Contenedores />
           </ProtectedRoute>
         }
       />

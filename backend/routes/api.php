@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\RecoleccionController;
 use App\Http\Controllers\Api\PortalRutaPublicController;
 use App\Http\Controllers\Api\PuntoRecoleccionController;
 use App\Http\Controllers\Api\TipoMaterialController;
+use App\Http\Controllers\Api\ContenedorController;
 
 Route::get('/portal-rutas/zonas', [PortalRutaPublicController::class, 'zonas']);
 Route::get('/portal-rutas', [PortalRutaPublicController::class, 'rutas']);
@@ -97,4 +98,18 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/tipos-material/{id}', [TipoMaterialController::class, 'update']);
     Route::delete('/tipos-material/{id}', [TipoMaterialController::class, 'destroy']);
     Route::patch('/tipos-material/{id}/restore', [TipoMaterialController::class, 'restore']);
+
+    Route::get('/tipos-material', [TipoMaterialController::class, 'index']);
+    Route::get('/tipos-material/{id}', [TipoMaterialController::class, 'show']);
+    Route::post('/tipos-material', [TipoMaterialController::class, 'store']);
+    Route::put('/tipos-material/{id}', [TipoMaterialController::class, 'update']);
+    Route::delete('/tipos-material/{id}', [TipoMaterialController::class, 'destroy']);
+    Route::patch('/tipos-material/{id}/restore', [TipoMaterialController::class, 'restore']);
+
+    Route::get('/contenedores', [ContenedorController::class, 'index']);
+    Route::get('/contenedores/{id}', [ContenedorController::class, 'show']);
+    Route::post('/contenedores', [ContenedorController::class, 'store']);
+    Route::put('/contenedores/{id}', [ContenedorController::class, 'update']);
+    Route::delete('/contenedores/{id}', [ContenedorController::class, 'destroy']);
+    Route::patch('/contenedores/{id}/restore', [ContenedorController::class, 'restore']);
 });

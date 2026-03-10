@@ -45,6 +45,7 @@ export default function Navbar() {
       <NavLink to="/seguimiento">Seguimiento</NavLink>
       <NavLink to="/monitoreo-asignaciones">Monitoreo</NavLink>
       <NavLink to="/tipos-material">Tipos Material</NavLink>
+      <NavLink to="/contenedores">Contenedores</NavLink>
       
       </>
       )}
