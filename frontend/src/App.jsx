@@ -19,6 +19,9 @@ import TiposMaterial from "./pages/TiposMaterial";
 import Contenedores from "./pages/Contenedores";
 import AlertasContenedores from "./pages/AlertasContenedores";
 import OperacionReciclaje from "./pages/OperacionReciclaje";
+import ReportesReciclaje from "./pages/ReportesReciclaje";
+import ReportesDenuncias from "./pages/ReportesDenuncias";
+import ReportesRecoleccion from "./pages/ReportesRecoleccion";
 
 export default function App() {
   return (
@@ -144,6 +147,33 @@ export default function App() {
           </ProtectedRoute>
         }
       />
+
+      <Route
+        path="/reportes-reciclaje"
+        element={
+          <ProtectedRoute>
+            <ReportesReciclaje />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/reportes-denuncias"
+        element={
+          <ProtectedRoute>
+            <ReportesDenuncias />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+  path="/reportes-recoleccion"
+  element={
+    <ProtectedRoute>
+      <ReportesRecoleccion />
+    </ProtectedRoute>
+  }
+/>
 
         <Route path="/seguimiento" element={<Seguimiento />} />
 

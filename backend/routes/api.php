@@ -21,6 +21,9 @@ use App\Http\Controllers\Api\ContenedorController;
 use App\Http\Controllers\Api\EntregaMaterialController;
 use App\Http\Controllers\Api\VaciadoContenedorController;
 use App\Http\Controllers\Api\NotificacionController;
+use App\Http\Controllers\Api\ReportesReciclajeController;
+use App\Http\Controllers\Api\ReportesDenunciasController;
+use App\Http\Controllers\Api\ReportesRecoleccionController;
 
 Route::get('/portal-rutas/zonas', [PortalRutaPublicController::class, 'zonas']);
 Route::get('/portal-rutas', [PortalRutaPublicController::class, 'rutas']);
@@ -129,4 +132,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/vaciados', [VaciadoContenedorController::class, 'index']);
     Route::post('/vaciados/programar', [VaciadoContenedorController::class, 'programar']);
     Route::patch('/vaciados/{id}/completar', [VaciadoContenedorController::class, 'completar']);
+
+    Route::get('/reportes/reciclaje/tipo', [ReportesReciclajeController::class, 'reciclajePorTipo']);
+    Route::get('/reportes/reciclaje/puntos-verdes', [ReportesReciclajeController::class, 'puntosVerdesMasActivos']);
+    Route::get('/reportes/reciclaje/tendencia', [ReportesReciclajeController::class, 'tendenciaReciclaje']);
+
+    Route::get('/reportes/denuncias/estado', [ReportesDenunciasController::class, 'denunciasPorEstado']);
+    Route::get('/reportes/denuncias/tiempo-promedio', [ReportesDenunciasController::class, 'tiempoPromedioAtencion']);
+    Route::get('/reportes/denuncias/zonas', [ReportesDenunciasController::class, 'zonasConMasDenuncias']);
+
+    Route::get('/reportes/recoleccion/dia', [ReportesRecoleccionController::class, 'recoleccionPorDia']);
+    Route::get('/reportes/recoleccion/ruta', [ReportesRecoleccionController::class, 'recoleccionPorRuta']);
+    Route::get('/reportes/recoleccion/zona', [ReportesRecoleccionController::class, 'recoleccionPorZona']);
 });

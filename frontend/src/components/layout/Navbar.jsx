@@ -48,6 +48,9 @@ export default function Navbar() {
       <NavLink to="/contenedores">Contenedores</NavLink>
       
       <NavLink to="/operacion-reciclaje">Operación Reciclaje</NavLink>
+      <NavLink to="/reportes-reciclaje">Reportes Reciclaje</NavLink>
+      <NavLink to="/reportes-denuncias">Reportes Denuncias</NavLink>
+      <NavLink to="/reportes-recoleccion">Reportes Recolección</NavLink>
       
       </>
       )}
