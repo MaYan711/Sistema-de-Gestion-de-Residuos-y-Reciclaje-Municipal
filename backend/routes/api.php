@@ -18,6 +18,9 @@ use App\Http\Controllers\Api\PortalRutaPublicController;
 use App\Http\Controllers\Api\PuntoRecoleccionController;
 use App\Http\Controllers\Api\TipoMaterialController;
 use App\Http\Controllers\Api\ContenedorController;
+use App\Http\Controllers\Api\EntregaMaterialController;
+use App\Http\Controllers\Api\VaciadoContenedorController;
+use App\Http\Controllers\Api\NotificacionController;
 
 Route::get('/portal-rutas/zonas', [PortalRutaPublicController::class, 'zonas']);
 Route::get('/portal-rutas', [PortalRutaPublicController::class, 'rutas']);
@@ -112,4 +115,18 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/contenedores/{id}', [ContenedorController::class, 'update']);
     Route::delete('/contenedores/{id}', [ContenedorController::class, 'destroy']);
     Route::patch('/contenedores/{id}/restore', [ContenedorController::class, 'restore']);
+
+
+    Route::get('/notificaciones/contenedores', [NotificacionController::class, 'indexContenedores']);
+    Route::patch('/notificaciones/{id}/leida', [NotificacionController::class, 'marcarLeida']);
+
+
+
+    Route::get('/entregas-material/catalogos', [EntregaMaterialController::class, 'catalogos']);
+    Route::get('/entregas-material', [EntregaMaterialController::class, 'index']);
+    Route::post('/entregas-material', [EntregaMaterialController::class, 'store']);
+
+    Route::get('/vaciados', [VaciadoContenedorController::class, 'index']);
+    Route::post('/vaciados/programar', [VaciadoContenedorController::class, 'programar']);
+    Route::patch('/vaciados/{id}/completar', [VaciadoContenedorController::class, 'completar']);
 });

@@ -17,6 +17,8 @@ import PortalRutas from './pages/PortalRutas.jsx'
 import MonitoreoAsignaciones from './pages/MonitoreoAsignaciones.jsx'
 import TiposMaterial from "./pages/TiposMaterial";
 import Contenedores from "./pages/Contenedores";
+import AlertasContenedores from "./pages/AlertasContenedores";
+import OperacionReciclaje from "./pages/OperacionReciclaje";
 
 export default function App() {
   return (
@@ -121,6 +123,24 @@ export default function App() {
         element={
           <ProtectedRoute>
             <Contenedores />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/alertas-contenedores"
+        element={
+          <ProtectedRoute>
+            <AlertasContenedores />
+          </ProtectedRoute>
+        }
+      />
+
+              <Route
+        path="/operacion-reciclaje"
+        element={
+          <ProtectedRoute>
+            <OperacionReciclaje />
           </ProtectedRoute>
         }
       />

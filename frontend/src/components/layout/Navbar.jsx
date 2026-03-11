@@ -47,6 +47,8 @@ export default function Navbar() {
       <NavLink to="/tipos-material">Tipos Material</NavLink>
       <NavLink to="/contenedores">Contenedores</NavLink>
       
+      <NavLink to="/operacion-reciclaje">Operación Reciclaje</NavLink>
+      
       </>
       )}
      </div>
