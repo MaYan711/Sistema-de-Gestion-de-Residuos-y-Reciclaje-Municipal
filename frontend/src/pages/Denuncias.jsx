@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from "react-leaflet";
 import { api } from "../api/axios.js";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { uploadFotoDenuncia, getFotosDenuncia } from "../services/fotoDenuncia.service";
+import { useAuth } from "../auth/AuthContext.jsx";
 
 function ClickCapture({ enabled, onPick }) {
   useMapEvents({
@@ -27,7 +29,24 @@ export default function Denuncias() {
   const [open, setOpen] = useState(false);
   const [pickMode, setPickMode] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [foto, setFoto] = useState(null);
   const navigate = useNavigate();
+
+  const { user } = useAuth();
+
+  const rolNombre = String(
+    user?.rol_nombre || user?.rol || ""
+  ).toLowerCase();
+
+  const puedeSubirAntesDespues =
+    rolNombre === "administrador" || rolNombre === "coordinador";
+
+  const [denunciaFotos, setDenunciaFotos] = useState(null);
+  const [fotoAntes, setFotoAntes] = useState(null);
+  const [fotoDespues, setFotoDespues] = useState(null);
+  const [fotos, setFotos] = useState([]);
+  const [subiendoAntes, setSubiendoAntes] = useState(false);
+  const [subiendoDespues, setSubiendoDespues] = useState(false);
 
   const [form, setForm] = useState({
     direccion: "",
@@ -48,6 +67,18 @@ export default function Denuncias() {
   });
 
   const center = useMemo(() => [14.634915, -90.506882], []);
+
+  const getDenunciaId = (d) => d?.id_denuncia ?? d?.id ?? null;
+
+  const normalizeFotos = (data) => {
+    if (Array.isArray(data)) return data;
+    if (Array.isArray(data?.data)) return data.data;
+    return [];
+  };
+
+  const fotosDenuncia = fotos.filter((f) => f.tipo_foto === "denuncia");
+  const fotosAntesLista = fotos.filter((f) => f.tipo_foto === "antes");
+  const fotosDespuesLista = fotos.filter((f) => f.tipo_foto === "despues");
 
   const load = () => {
     setLoading(true);
@@ -77,6 +108,7 @@ export default function Denuncias() {
 
   const openCreate = () => {
     setEditingId(null);
+    setFoto(null);
     setForm({
       direccion: "",
       descripcion: "",
@@ -90,7 +122,8 @@ export default function Denuncias() {
   };
 
   const openEdit = (d) => {
-    setEditingId(d.id);
+    setEditingId(getDenunciaId(d));
+    setFoto(null);
     setForm({
       direccion: d.direccion ?? "",
       descripcion: d.descripcion ?? "",
@@ -106,6 +139,7 @@ export default function Denuncias() {
   const closeModal = () => {
     setPickMode(false);
     setOpen(false);
+    setFoto(null);
   };
 
   const onPick = ({ latitud, longitud }) => {
@@ -134,8 +168,15 @@ export default function Denuncias() {
       if (editingId) {
         await api.put(`/denuncias/${editingId}`, payload);
       } else {
-        await api.post("/denuncias", payload);
+        const res = await api.post("/denuncias", payload);
+        const nuevaDenuncia = res.data?.data || res.data;
+        const nuevaDenunciaId = getDenunciaId(nuevaDenuncia);
+
+        if (foto && nuevaDenunciaId) {
+          await uploadFotoDenuncia(nuevaDenunciaId, "denuncia", foto);
+        }
       }
+
       closeModal();
       load();
     } catch (err) {
@@ -173,14 +214,70 @@ export default function Denuncias() {
   const applyFilters = () => load();
 
   const openAssign = (d) => {
-  setAssignId(d.id);
-  setAssignForm({
-    id_cuadrilla: d.id_cuadrilla != null ? String(d.id_cuadrilla) : "",
-    fecha_programada: d.fecha_programada ?? "",
-    recursos: d.recursos ?? "",
-  });
-  setAssignOpen(true);
-};
+    setAssignId(getDenunciaId(d));
+    setAssignForm({
+      id_cuadrilla: d.id_cuadrilla != null ? String(d.id_cuadrilla) : "",
+      fecha_programada: d.fecha_programada ?? "",
+      recursos: d.recursos ?? "",
+    });
+    setAssignOpen(true);
+  };
+
+  async function abrirFotos(denuncia) {
+    try {
+      setDenunciaFotos(denuncia);
+      setFotoAntes(null);
+      setFotoDespues(null);
+
+      const denunciaId = getDenunciaId(denuncia);
+      const data = await getFotosDenuncia(denunciaId);
+
+      setFotos(normalizeFotos(data));
+    } catch (err) {
+      console.log("DEN fotos error:", err.response?.data || err.message);
+      alert("No se pudieron cargar las fotos");
+    }
+  }
+
+  async function subirFotoAntes() {
+    if (!fotoAntes || !denunciaFotos) return;
+
+    try {
+      setSubiendoAntes(true);
+
+      const denunciaId = getDenunciaId(denunciaFotos);
+      await uploadFotoDenuncia(denunciaId, "antes", fotoAntes);
+
+      const data = await getFotosDenuncia(denunciaId);
+      setFotos(normalizeFotos(data));
+      setFotoAntes(null);
+    } catch (err) {
+      console.log("DEN foto antes error:", err.response?.data || err.message);
+      alert("No se pudo subir la foto antes");
+    } finally {
+      setSubiendoAntes(false);
+    }
+  }
+
+  async function subirFotoDespues() {
+    if (!fotoDespues || !denunciaFotos) return;
+
+    try {
+      setSubiendoDespues(true);
+
+      const denunciaId = getDenunciaId(denunciaFotos);
+      await uploadFotoDenuncia(denunciaId, "despues", fotoDespues);
+
+      const data = await getFotosDenuncia(denunciaId);
+      setFotos(normalizeFotos(data));
+      setFotoDespues(null);
+    } catch (err) {
+      console.log("DEN foto despues error:", err.response?.data || err.message);
+      alert("No se pudo subir la foto después");
+    } finally {
+      setSubiendoDespues(false);
+    }
+  }
 
   const closeAssign = () => {
     setAssignOpen(false);
@@ -190,6 +287,13 @@ export default function Denuncias() {
       fecha_programada: "",
       recursos: "",
     });
+  };
+
+  const closeFotos = () => {
+    setDenunciaFotos(null);
+    setFotoAntes(null);
+    setFotoDespues(null);
+    setFotos([]);
   };
 
   const submitAssign = async (e) => {
@@ -229,7 +333,7 @@ export default function Denuncias() {
             {items
               .filter((d) => d.latitud != null && d.longitud != null)
               .map((d) => (
-                <Marker key={d.id} position={[Number(d.latitud), Number(d.longitud)]}>
+                <Marker key={getDenunciaId(d)} position={[Number(d.latitud), Number(d.longitud)]}>
                   <Popup>
                     <strong>{d.codigo_segui}</strong>
                     <br />
@@ -277,59 +381,69 @@ export default function Denuncias() {
             ) : items.length === 0 ? (
               <p>No hay denuncias.</p>
             ) : (
-              items.map((d) => (
-                <div
-                  key={d.id}
-                  style={{
-                    border: "1px solid rgba(255,255,255,0.08)",
-                    borderRadius: 10,
-                    padding: 10,
-                  }}
-                >
-                  <div style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
-                    <div style={{ fontWeight: 700 }}>{d.codigo_segui}</div>
-                    <div style={{ fontSize: 12, opacity: 0.85 }}>{d.fecha}</div>
-                  </div>
+              items.map((d) => {
+                const denunciaId = getDenunciaId(d);
 
-                  <div style={{ fontSize: 12, opacity: 0.85, marginTop: 4 }}>
-                    {d.ciudadano_nombre || "Ciudadano"}
-                  </div>
+                return (
+                  <div
+                    key={denunciaId}
+                    style={{
+                      border: "1px solid rgba(255,255,255,0.08)",
+                      borderRadius: 10,
+                      padding: 10,
+                    }}
+                  >
+                    <div style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
+                      <div style={{ fontWeight: 700 }}>{d.codigo_segui}</div>
+                      <div style={{ fontSize: 12, opacity: 0.85 }}>{d.fecha}</div>
+                    </div>
 
-                  <div style={{ fontSize: 12, opacity: 0.85, marginTop: 4 }}>
-                    {d.direccion}
-                  </div>
+                    <div style={{ fontSize: 12, opacity: 0.85, marginTop: 4 }}>
+                      {d.ciudadano_nombre || "Ciudadano"}
+                    </div>
 
-                  <div style={{ display: "flex", gap: 10, marginTop: 8, alignItems: "center", flexWrap: "wrap" }}>
-                    <select value={d.estado} onChange={(e) => changeEstado(d.id, e.target.value)}>
-                      {ESTADOS.map((e) => (
-                        <option key={e} value={e}>
-                          {e}
-                        </option>
-                      ))}
-                    </select>
+                    <div style={{ fontSize: 12, opacity: 0.85, marginTop: 4 }}>
+                      {d.direccion}
+                    </div>
 
-                    <button className="btn" type="button" onClick={() => openEdit(d)}>
-                      Editar
-                    </button>
+                    <div style={{ display: "flex", gap: 10, marginTop: 8, alignItems: "center", flexWrap: "wrap" }}>
+                      <select value={d.estado} onChange={(e) => changeEstado(denunciaId, e.target.value)}>
+                        {ESTADOS.map((e) => (
+                          <option key={e} value={e}>
+                            {e}
+                          </option>
+                        ))}
+                      </select>
 
-                    <button className="btn" type="button" onClick={() => openAssign(d)}>
-                      Asignar cuadrilla
-                    </button>
+                      <button className="btn" type="button" onClick={() => openEdit(d)}>
+                        Editar
+                      </button>
 
-                    <button
+                      <button className="btn" type="button" onClick={() => openAssign(d)}>
+                        Asignar cuadrilla
+                      </button>
+
+                      <button className="btn" type="button" onClick={() => abrirFotos(d)}>
+                        Fotos
+                      </button>
+
+                      <button
                         className="btn"
                         type="button"
-                        onClick={() => navigate(`/seguimiento-denuncia?codigo=${encodeURIComponent(d.codigo_segui)}`)}
-                        >
+                        onClick={() =>
+                          navigate(`/seguimiento-denuncia?codigo=${encodeURIComponent(d.codigo_segui)}`)
+                        }
+                      >
                         Ver seguimiento
-                        </button>
+                      </button>
 
-                    <button className="btn" type="button" onClick={() => remove(d.id, d.codigo_segui)}>
-                      Eliminar
-                    </button>
+                      <button className="btn" type="button" onClick={() => remove(denunciaId, d.codigo_segui)}>
+                        Eliminar
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         </div>
@@ -403,6 +517,18 @@ export default function Denuncias() {
                   onChange={(e) => setForm((f) => ({ ...f, longitud: e.target.value }))}
                 />
               </div>
+
+              {!editingId && (
+                <div>
+                  <label className="form-label">Foto del basurero</label>
+                  <input
+                    type="file"
+                    className="form-control"
+                    accept="image/*"
+                    onChange={(e) => setFoto(e.target.files[0] || null)}
+                  />
+                </div>
+              )}
 
               <button
                 className="btn"
@@ -484,6 +610,273 @@ export default function Denuncias() {
           </div>
         </div>
       )}
+
+      {denunciaFotos && (
+  <div
+    style={{
+      position: "fixed",
+      inset: 0,
+      background: "rgba(0,0,0,0.65)",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      padding: 16,
+      zIndex: 10000,
+    }}
+    onClick={closeFotos}
+  >
+    <div
+      style={{
+        width: 980,
+        maxWidth: "100%",
+        maxHeight: "90vh",
+        overflowY: "auto",
+        background: "#ffffff",
+        color: "#111827",
+        borderRadius: 14,
+        padding: 20,
+        boxShadow: "0 20px 60px rgba(0,0,0,0.35)",
+      }}
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+        <div>
+          <h3 style={{ margin: 0, color: "#111827" }}>Fotos de la denuncia</h3>
+          <div style={{ marginTop: 6, fontSize: 14, color: "#4b5563" }}>
+            {denunciaFotos.codigo_segui} - {denunciaFotos.direccion}
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={closeFotos}
+          style={{
+            border: "none",
+            background: "#ef4444",
+            color: "#fff",
+            width: 38,
+            height: 38,
+            borderRadius: 999,
+            cursor: "pointer",
+            fontWeight: 700,
+          }}
+        >
+          X
+        </button>
+      </div>
+
+      <div style={{ marginTop: 18 }}>
+        <h4 style={{ marginBottom: 10, color: "#111827" }}>Foto de denuncia</h4>
+
+        {fotosDenuncia.length === 0 ? (
+          <div
+            style={{
+              background: "#f3f4f6",
+              border: "1px solid #e5e7eb",
+              borderRadius: 10,
+              padding: 14,
+              color: "#4b5563",
+            }}
+          >
+            No hay foto inicial.
+          </div>
+        ) : (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12 }}>
+            {fotosDenuncia.map((f) => (
+              <div
+                key={f.id_foto}
+                style={{
+                  border: "1px solid #e5e7eb",
+                  borderRadius: 12,
+                  padding: 10,
+                  background: "#fff",
+                }}
+              >
+                <img
+                  src={f.url_foto}
+                  alt={f.tipo_foto}
+                  style={{ width: "100%", height: 220, objectFit: "cover", borderRadius: 8 }}
+                />
+                <div style={{ marginTop: 8, fontSize: 13, color: "#374151", fontWeight: 600 }}>
+                  {f.tipo_foto}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div style={{ marginTop: 24, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+        <div
+          style={{
+            border: "1px solid #e5e7eb",
+            borderRadius: 12,
+            padding: 16,
+            background: "#f9fafb",
+          }}
+        >
+          <h4 style={{ marginTop: 0, color: "#111827" }}>Antes de limpieza</h4>
+
+          {puedeSubirAntesDespues && (
+            <>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setFotoAntes(e.target.files[0] || null)}
+                style={{
+                  width: "100%",
+                  padding: 10,
+                  border: "1px solid #d1d5db",
+                  borderRadius: 8,
+                  background: "#fff",
+                }}
+              />
+
+              <button
+                type="button"
+                onClick={subirFotoAntes}
+                disabled={!fotoAntes || subiendoAntes}
+                style={{
+                  marginTop: 10,
+                  border: "none",
+                  background: "#2563eb",
+                  color: "#fff",
+                  padding: "10px 14px",
+                  borderRadius: 8,
+                  cursor: !fotoAntes || subiendoAntes ? "not-allowed" : "pointer",
+                  opacity: !fotoAntes || subiendoAntes ? 0.7 : 1,
+                }}
+              >
+                {subiendoAntes ? "Subiendo..." : "Subir foto antes"}
+              </button>
+            </>
+          )}
+
+          <div style={{ marginTop: 16, display: "grid", gap: 12 }}>
+            {fotosAntesLista.length === 0 ? (
+              <div
+                style={{
+                  background: "#fff",
+                  border: "1px solid #e5e7eb",
+                  borderRadius: 10,
+                  padding: 14,
+                  color: "#4b5563",
+                }}
+              >
+                No hay fotos antes.
+              </div>
+            ) : (
+              fotosAntesLista.map((f) => (
+                <div
+                  key={f.id_foto}
+                  style={{
+                    border: "1px solid #e5e7eb",
+                    borderRadius: 12,
+                    padding: 10,
+                    background: "#fff",
+                  }}
+                >
+                  <img
+                    src={f.url_foto}
+                    alt={f.tipo_foto}
+                    style={{ width: "100%", height: 220, objectFit: "cover", borderRadius: 8 }}
+                  />
+                  <div style={{ marginTop: 8, fontSize: 13, color: "#374151", fontWeight: 600 }}>
+                    {f.tipo_foto}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
+        <div
+          style={{
+            border: "1px solid #e5e7eb",
+            borderRadius: 12,
+            padding: 16,
+            background: "#f9fafb",
+          }}
+        >
+          <h4 style={{ marginTop: 0, color: "#111827" }}>Después de limpieza</h4>
+
+          {puedeSubirAntesDespues && (
+            <>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setFotoDespues(e.target.files[0] || null)}
+                style={{
+                  width: "100%",
+                  padding: 10,
+                  border: "1px solid #d1d5db",
+                  borderRadius: 8,
+                  background: "#fff",
+                }}
+              />
+
+              <button
+                type="button"
+                onClick={subirFotoDespues}
+                disabled={!fotoDespues || subiendoDespues}
+                style={{
+                  marginTop: 10,
+                  border: "none",
+                  background: "#16a34a",
+                  color: "#fff",
+                  padding: "10px 14px",
+                  borderRadius: 8,
+                  cursor: !fotoDespues || subiendoDespues ? "not-allowed" : "pointer",
+                  opacity: !fotoDespues || subiendoDespues ? 0.7 : 1,
+                }}
+              >
+                {subiendoDespues ? "Subiendo..." : "Subir foto después"}
+              </button>
+            </>
+          )}
+
+          <div style={{ marginTop: 16, display: "grid", gap: 12 }}>
+            {fotosDespuesLista.length === 0 ? (
+              <div
+                style={{
+                  background: "#fff",
+                  border: "1px solid #e5e7eb",
+                  borderRadius: 10,
+                  padding: 14,
+                  color: "#4b5563",
+                }}
+              >
+                No hay fotos después.
+              </div>
+            ) : (
+              fotosDespuesLista.map((f) => (
+                <div
+                  key={f.id_foto}
+                  style={{
+                    border: "1px solid #e5e7eb",
+                    borderRadius: 12,
+                    padding: 10,
+                    background: "#fff",
+                  }}
+                >
+                  <img
+                    src={f.url_foto}
+                    alt={f.tipo_foto}
+                    style={{ width: "100%", height: 220, objectFit: "cover", borderRadius: 8 }}
+                  />
+                  <div style={{ marginTop: 8, fontSize: 13, color: "#374151", fontWeight: 600 }}>
+                    {f.tipo_foto}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+  
     </div>
   );
 }

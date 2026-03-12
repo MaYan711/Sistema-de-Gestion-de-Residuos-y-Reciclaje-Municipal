@@ -2,38 +2,62 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\DB;
+use App\Models\FotoDenuncia;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 class FotoDenunciaService
 {
-    public function list(int $idDenuncia): array
+    public function listarPorDenuncia(int $idDenuncia): array
     {
-        return DB::table('foto_denuncia')
-            ->select(['id_foto as id', 'id_denuncia', 'ruta', 'tipo', 'fecha'])
+        return FotoDenuncia::query()
             ->where('id_denuncia', $idDenuncia)
-            ->orderBy('fecha', 'asc')
+            ->orderBy('fecha_subida', 'asc')
             ->get()
+            ->map(fn ($foto) => [
+                'id_foto' => $foto->id_foto,
+                'id_denuncia' => $foto->id_denuncia,
+                'url_foto' => $this->resolverUrl($foto->url_foto),
+                'tipo_foto' => $foto->tipo_foto,
+                'fecha_subida' => $foto->fecha_subida,
+            ])
             ->toArray();
     }
 
-    public function upload(int $idDenuncia, string $tipo, $file): array
+    public function subir(int $idDenuncia, string $tipoFoto, UploadedFile $archivo): array
     {
-        $path = $file->store('denuncias', 'public');
-        $url = Storage::disk('public')->url($path);
+        $tiposPermitidos = ['denuncia', 'antes', 'despues'];
 
-        $id = DB::table('foto_denuncia')->insertGetId([
+        if (!in_array($tipoFoto, $tiposPermitidos, true)) {
+            throw ValidationException::withMessages([
+                'tipo_foto' => ['Tipo de foto no válido.'],
+            ]);
+        }
+
+        $ruta = $archivo->store('denuncias', 'public');
+
+        $foto = FotoDenuncia::query()->create([
             'id_denuncia' => $idDenuncia,
-            'ruta' => $url,
-            'tipo' => $tipo,
-            'fecha' => now(),
-        ], 'id_foto');
+            'url_foto' => $ruta,
+            'tipo_foto' => $tipoFoto,
+        ]);
 
-        $row = DB::table('foto_denuncia')
-            ->select(['id_foto as id', 'id_denuncia', 'ruta', 'tipo', 'fecha'])
-            ->where('id_foto', $id)
-            ->first();
+        return [
+            'id_foto' => $foto->id_foto,
+            'id_denuncia' => $foto->id_denuncia,
+            'url_foto' => $this->resolverUrl($foto->url_foto),
+            'tipo_foto' => $foto->tipo_foto,
+            'fecha_subida' => $foto->fecha_subida,
+        ];
+    }
 
-        return (array)$row;
+    private function resolverUrl(string $ruta): string
+    {
+        if (str_starts_with($ruta, 'http://') || str_starts_with($ruta, 'https://')) {
+            return $ruta;
+        }
+
+        return asset('storage/' . ltrim($ruta, '/'));
     }
 }
