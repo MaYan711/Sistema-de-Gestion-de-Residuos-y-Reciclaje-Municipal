@@ -4,7 +4,6 @@ import { api } from '../../api/axios.js'
 import { hasRole } from '../../utils/roleUtils.js'
 
 export default function Navbar() {
-
   const { isAuthed, logout, user } = useAuth()
   const nav = useNavigate()
 
@@ -30,20 +29,16 @@ export default function Navbar() {
           justifyContent: 'space-between',
         }}
       >
-
         <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
-
           <strong>ResiduosMuni</strong>
 
           <NavLink to="/portal-rutas">Portal Rutas</NavLink>
 
           {isAuthed && (
-
             <>
-
-              {hasRole(user,["administrador","coordinador"]) && (
+              {hasRole(user, ["administrador", "coordinador"]) && (
                 <>
-                  <NavLink to="/">Dashboard</NavLink>
+                  <NavLink to="/dashboard">Dashboard</NavLink>
                   <NavLink to="/mapa">Mapa</NavLink>
                   <NavLink to="/zonas">Zonas</NavLink>
                   <NavLink to="/rutas">Rutas</NavLink>
@@ -54,7 +49,7 @@ export default function Navbar() {
                 </>
               )}
 
-              {hasRole(user,["administrador","operador"]) && (
+              {hasRole(user, ["administrador", "operador"]) && (
                 <>
                   <NavLink to="/tipos-material">Tipos Material</NavLink>
                   <NavLink to="/contenedores">Contenedores</NavLink>
@@ -62,14 +57,14 @@ export default function Navbar() {
                 </>
               )}
 
-              {hasRole(user,["administrador","coordinador","ciudadano"]) && (
+              {hasRole(user, ["administrador", "coordinador", "ciudadano"]) && (
                 <>
                   <NavLink to="/denuncias">Denuncias</NavLink>
                   <NavLink to="/seguimiento">Seguimiento</NavLink>
                 </>
               )}
 
-              {hasRole(user,["administrador","coordinador","auditor"]) && (
+              {hasRole(user, ["administrador", "coordinador", "auditor"]) && (
                 <>
                   <NavLink to="/reportes-reciclaje">Reportes Reciclaje</NavLink>
                   <NavLink to="/reportes-denuncias">Reportes Denuncias</NavLink>
@@ -77,34 +72,24 @@ export default function Navbar() {
                 </>
               )}
 
-              {hasRole(user,["administrador"]) && (
+              {hasRole(user, ["administrador"]) && (
                 <NavLink to="/usuarios">Usuarios</NavLink>
               )}
-
             </>
-
           )}
-
         </div>
 
         <div>
-
           {isAuthed ? (
-
             <button className="btn" onClick={handleLogout}>
               Cerrar sesión
             </button>
-
           ) : (
-
             <Link className="btn" to="/login">
               Iniciar sesión
             </Link>
-
           )}
-
         </div>
-
       </div>
     </div>
   )

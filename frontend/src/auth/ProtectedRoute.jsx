@@ -1,9 +1,8 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
-import { hasRole } from "../utils/roleUtils";
+import { hasRole, getDefaultRouteByRole } from "../utils/roleUtils";
 
 function ProtectedRoute({ children, roles = [] }) {
-
   const { user, loading } = useAuth();
 
   if (loading) {
@@ -15,7 +14,7 @@ function ProtectedRoute({ children, roles = [] }) {
   }
 
   if (roles.length > 0 && !hasRole(user, roles)) {
-    return <Navigate to="/" replace />;
+    return <Navigate to={getDefaultRouteByRole(user)} replace />;
   }
 
   return children;

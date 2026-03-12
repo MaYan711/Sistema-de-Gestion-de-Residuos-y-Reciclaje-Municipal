@@ -13,7 +13,6 @@ use App\Http\Controllers\Api\RutaController;
 use App\Http\Controllers\Api\CamionController;
 use App\Http\Controllers\Api\AsignacionRutaController;
 use App\Http\Controllers\Api\RecoleccionController;
-
 use App\Http\Controllers\Api\PortalRutaPublicController;
 use App\Http\Controllers\Api\PuntoRecoleccionController;
 use App\Http\Controllers\Api\TipoMaterialController;
@@ -31,6 +30,7 @@ Route::get('/portal-rutas', [PortalRutaPublicController::class, 'rutas']);
 Route::get('/portal-rutas/{id}', [PortalRutaPublicController::class, 'show']);
 
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register-ciudadano', [AuthController::class, 'registerCiudadano']);
 Route::get('/denuncias/seguimiento/{codigo}', [DenunciaController::class, 'seguimientoPublico']);
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -109,7 +109,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/puntos-recoleccion/{id}/pendiente', [PuntoRecoleccionController::class, 'desmarcarRecolectado']);
   });
 
-Route::middleware('role:administrador,operador,coordinador')->group(function () {
+  Route::middleware('role:administrador,operador,coordinador')->group(function () {
     Route::get('/puntos-verdes', [PuntoVerdeController::class, 'index']);
     Route::get('/tipos-material', [TipoMaterialController::class, 'index']);
     Route::get('/tipos-material/{id}', [TipoMaterialController::class, 'show']);

@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import Login from './pages/Login.jsx'
+import RegisterCiudadano from './pages/RegisterCiudadano.jsx'
 import Dashboard from './pages/Dashboard.jsx'
 import Mapa from './pages/Mapa.jsx'
 import Zonas from './pages/Zonas.jsx'
@@ -22,6 +23,13 @@ import ReportesReciclaje from "./pages/ReportesReciclaje";
 import ReportesDenuncias from "./pages/ReportesDenuncias";
 import ReportesRecoleccion from "./pages/ReportesRecoleccion";
 import Usuarios from "./pages/Usuarios";
+import { useAuth } from './auth/AuthContext.jsx'
+import { getDefaultRouteByRole } from './utils/roleUtils.js'
+
+function RoleHomeRedirect() {
+  const { user } = useAuth()
+  return <Navigate to={getDefaultRouteByRole(user)} replace />
+}
 
 export default function App() {
   return (
@@ -30,11 +38,22 @@ export default function App() {
 
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/register-ciudadano" element={<RegisterCiudadano />} />
         <Route path="/portal-rutas" element={<PortalRutas />} />
         <Route path="/seguimiento-denuncia" element={<SeguimientoDenuncia />} />
+        <Route path="/seguimiento" element={<Seguimiento />} />
 
         <Route
           path="/"
+          element={
+            <ProtectedRoute>
+              <RoleHomeRedirect />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/dashboard"
           element={
             <ProtectedRoute roles={["administrador","coordinador"]}>
               <Dashboard />
@@ -186,7 +205,6 @@ export default function App() {
           }
         />
 
-        <Route path="/seguimiento" element={<Seguimiento />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>

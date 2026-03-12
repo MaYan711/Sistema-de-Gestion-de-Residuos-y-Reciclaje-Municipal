@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 const initialState = {
   id_rol: "",
@@ -11,6 +11,12 @@ const initialState = {
 
 function UsuarioForm({ roles, usuarioEditando, onSubmit, loading, onCancel }) {
   const [form, setForm] = useState(initialState);
+
+  const rolesInternos = useMemo(() => {
+    return roles.filter(
+      (rol) => String(rol.nombre || "").toLowerCase() !== "ciudadano"
+    );
+  }, [roles]);
 
   useEffect(() => {
     if (usuarioEditando) {
@@ -74,7 +80,7 @@ function UsuarioForm({ roles, usuarioEditando, onSubmit, loading, onCancel }) {
               required
             >
               <option value="">Seleccione</option>
-              {roles.map((rol) => (
+              {rolesInternos.map((rol) => (
                 <option key={rol.id_rol} value={rol.id_rol}>
                   {rol.nombre}
                 </option>

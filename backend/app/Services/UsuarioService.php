@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Rol;
 use App\Models\Usuario;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class UsuarioService
 {
@@ -47,6 +48,8 @@ class UsuarioService
 
     public function crear(array $data): array
     {
+        $this->validarRolInterno($data['id_rol']);
+
         $usuario = Usuario::query()->create([
             'id_rol' => $data['id_rol'],
             'nombre' => $data['nombre'],
@@ -64,6 +67,8 @@ class UsuarioService
 
     public function actualizar(int $id, array $data): array
     {
+        $this->validarRolInterno($data['id_rol']);
+
         $usuario = Usuario::query()->findOrFail($id);
 
         $payload = [
@@ -94,6 +99,17 @@ class UsuarioService
         $usuario->load('rol');
 
         return $this->mapUsuario($usuario);
+    }
+
+    private function validarRolInterno(int $idRol): void
+    {
+        $rol = Rol::query()->findOrFail($idRol);
+
+        if (mb_strtolower($rol->nombre) === 'ciudadano') {
+            throw ValidationException::withMessages([
+                'id_rol' => ['El rol ciudadano solo puede crearse desde el registro público.'],
+            ]);
+        }
     }
 
     private function mapUsuario(Usuario $usuario): array
