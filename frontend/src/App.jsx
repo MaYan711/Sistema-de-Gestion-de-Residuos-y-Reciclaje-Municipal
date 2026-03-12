@@ -3,7 +3,6 @@ import Login from './pages/Login.jsx'
 import Dashboard from './pages/Dashboard.jsx'
 import Mapa from './pages/Mapa.jsx'
 import Zonas from './pages/Zonas.jsx'
-import { AuthProvider } from './auth/AuthContext.jsx'
 import ProtectedRoute from './auth/ProtectedRoute.jsx'
 import Navbar from './components/layout/Navbar.jsx'
 import Denuncias from './pages/Denuncias.jsx'
@@ -22,11 +21,13 @@ import OperacionReciclaje from "./pages/OperacionReciclaje";
 import ReportesReciclaje from "./pages/ReportesReciclaje";
 import ReportesDenuncias from "./pages/ReportesDenuncias";
 import ReportesRecoleccion from "./pages/ReportesRecoleccion";
+import Usuarios from "./pages/Usuarios";
 
 export default function App() {
   return (
-    <AuthProvider>
+    <>
       <Navbar />
+
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/portal-rutas" element={<PortalRutas />} />
@@ -35,7 +36,7 @@ export default function App() {
         <Route
           path="/"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute roles={["administrador","coordinador"]}>
               <Dashboard />
             </ProtectedRoute>
           }
@@ -44,7 +45,7 @@ export default function App() {
         <Route
           path="/mapa"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute roles={["administrador","coordinador"]}>
               <Mapa />
             </ProtectedRoute>
           }
@@ -53,15 +54,16 @@ export default function App() {
         <Route
           path="/zonas"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute roles={["administrador","coordinador"]}>
               <Zonas />
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/camiones"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute roles={["administrador","coordinador"]}>
               <Camiones />
             </ProtectedRoute>
           }
@@ -70,7 +72,7 @@ export default function App() {
         <Route
           path="/asignaciones-ruta"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute roles={["administrador","coordinador"]}>
               <AsignacionesRuta />
             </ProtectedRoute>
           }
@@ -79,8 +81,26 @@ export default function App() {
         <Route
           path="/monitoreo-asignaciones"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute roles={["administrador","coordinador"]}>
               <MonitoreoAsignaciones />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/recolecciones"
+          element={
+            <ProtectedRoute roles={["administrador","coordinador"]}>
+              <Recolecciones />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/rutas"
+          element={
+            <ProtectedRoute roles={["administrador","coordinador"]}>
+              <Rutas />
             </ProtectedRoute>
           }
         />
@@ -88,97 +108,87 @@ export default function App() {
         <Route
           path="/denuncias"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute roles={["administrador","coordinador","ciudadano"]}>
               <Denuncias />
             </ProtectedRoute>
           }
         />
 
         <Route
-        path="/recolecciones"
-        element={
-          <ProtectedRoute>
-            <Recolecciones />
-          </ProtectedRoute>
-        }
-      />
-
-        <Route
-          path="/rutas"
+          path="/tipos-material"
           element={
-            <ProtectedRoute>
-              <Rutas />
+            <ProtectedRoute roles={["administrador","operador"]}>
+              <TiposMaterial />
             </ProtectedRoute>
           }
         />
 
         <Route
-        path="/tipos-material"
-        element={
-          <ProtectedRoute>
-            <TiposMaterial />
-          </ProtectedRoute>
-        }
-      />
+          path="/contenedores"
+          element={
+            <ProtectedRoute roles={["administrador","operador"]}>
+              <Contenedores />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/contenedores"
-        element={
-          <ProtectedRoute>
-            <Contenedores />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/alertas-contenedores"
+          element={
+            <ProtectedRoute roles={["administrador","operador"]}>
+              <AlertasContenedores />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/alertas-contenedores"
-        element={
-          <ProtectedRoute>
-            <AlertasContenedores />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/operacion-reciclaje"
+          element={
+            <ProtectedRoute roles={["administrador","operador"]}>
+              <OperacionReciclaje />
+            </ProtectedRoute>
+          }
+        />
 
-              <Route
-        path="/operacion-reciclaje"
-        element={
-          <ProtectedRoute>
-            <OperacionReciclaje />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/reportes-reciclaje"
+          element={
+            <ProtectedRoute roles={["administrador","coordinador","auditor"]}>
+              <ReportesReciclaje />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/reportes-reciclaje"
-        element={
-          <ProtectedRoute>
-            <ReportesReciclaje />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/reportes-denuncias"
+          element={
+            <ProtectedRoute roles={["administrador","coordinador","auditor"]}>
+              <ReportesDenuncias />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/reportes-denuncias"
-        element={
-          <ProtectedRoute>
-            <ReportesDenuncias />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/reportes-recoleccion"
+          element={
+            <ProtectedRoute roles={["administrador","coordinador","auditor"]}>
+              <ReportesRecoleccion />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-  path="/reportes-recoleccion"
-  element={
-    <ProtectedRoute>
-      <ReportesRecoleccion />
-    </ProtectedRoute>
-  }
-/>
+        <Route
+          path="/usuarios"
+          element={
+            <ProtectedRoute roles={["administrador"]}>
+              <Usuarios />
+            </ProtectedRoute>
+          }
+        />
 
         <Route path="/seguimiento" element={<Seguimiento />} />
-
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </AuthProvider>
+    </>
   )
 }

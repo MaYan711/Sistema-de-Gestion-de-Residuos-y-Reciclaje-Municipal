@@ -32,11 +32,11 @@ class AuthController extends Controller
         return response()->json([
             'token' => $token,
             'usuario' => [
-                'id' => $user->id_usuario,
+                'id_usuario' => $user->id_usuario,
                 'email' => $user->email,
                 'nombre' => $user->nombre ?? null,
                 'id_rol' => $user->id_rol ?? null,
-                'rol' => $user->rol?->nombre,
+                'rol_nombre' => $user->rol?->nombre,
                 'activo' => $user->activo ?? true,
             ],
         ]);
@@ -48,11 +48,11 @@ class AuthController extends Controller
 
         return response()->json([
             'usuario' => [
-                'id' => $u->id_usuario,
+                'id_usuario' => $u->id_usuario,
                 'email' => $u->email,
                 'nombre' => $u->nombre ?? null,
                 'id_rol' => $u->id_rol ?? null,
-                'rol' => $u->rol?->nombre,
+                'rol_nombre' => $u->rol?->nombre,
                 'activo' => $u->activo ?? true,
             ],
         ]);
@@ -61,6 +61,9 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         $request->user()->tokens()->delete();
-        return response()->json(['ok' => true]);
+
+        return response()->json([
+            'message' => 'Sesión cerrada correctamente'
+        ]);
     }
 }
