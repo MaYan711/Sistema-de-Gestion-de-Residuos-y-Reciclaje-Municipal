@@ -56,85 +56,87 @@ export default function RegisterCiudadano() {
   }
 
   return (
-    <div className="container py-4" style={{ maxWidth: 520 }}>
-      <h2 className="mb-3">Crear cuenta ciudadana</h2>
+    <div className="auth-shell">
+      <div className="container auth-layout single-column">
+        <div className="auth-card auth-card-register">
+          <div className="auth-card-header">
+            <div className="auth-card-badge">Registro ciudadano</div>
+            <h2 className="auth-card-title">Crear cuenta ciudadana</h2>
+            <p className="auth-card-text">
+              Regístrate para reportar denuncias, consultar seguimiento y participar en el sistema municipal.
+            </p>
+          </div>
 
-      <div className="card shadow-sm">
-        <div className="card-body">
-          <form onSubmit={handleSubmit} className="row g-3">
-            <div className="col-12">
-              <label className="form-label">Nombre</label>
+          <form onSubmit={handleSubmit} className="auth-form">
+            <div className="auth-field">
+              <label className="auth-label">Nombre completo</label>
               <input
                 type="text"
                 name="nombre"
-                className="form-control"
+                className="auth-input"
                 value={form.nombre}
                 onChange={handleChange}
                 required
               />
             </div>
 
-            <div className="col-12">
-              <label className="form-label">Correo</label>
+            <div className="auth-field">
+              <label className="auth-label">Correo electrónico</label>
               <input
                 type="email"
                 name="email"
-                className="form-control"
+                className="auth-input"
                 value={form.email}
                 onChange={handleChange}
                 required
               />
             </div>
 
-            <div className="col-12">
-              <label className="form-label">Teléfono</label>
+            <div className="auth-field">
+              <label className="auth-label">Teléfono</label>
               <input
                 type="text"
                 name="telefono"
-                className="form-control"
+                className="auth-input"
                 value={form.telefono}
                 onChange={handleChange}
               />
             </div>
 
-            <div className="col-md-6">
-              <label className="form-label">Contraseña</label>
+            <div className="auth-field">
+              <label className="auth-label">Contraseña</label>
               <input
                 type="password"
                 name="password"
-                className="form-control"
+                className="auth-input"
                 value={form.password}
                 onChange={handleChange}
                 required
               />
             </div>
 
-            <div className="col-md-6">
-              <label className="form-label">Confirmar contraseña</label>
+            <div className="auth-field">
+              <label className="auth-label">Confirmar contraseña</label>
               <input
                 type="password"
                 name="password_confirmation"
-                className="form-control"
+                className="auth-input"
                 value={form.password_confirmation}
                 onChange={handleChange}
                 required
               />
             </div>
 
-            {error && (
-              <div className="col-12">
-                <div className="alert alert-danger mb-0">{error}</div>
-              </div>
-            )}
+            {error && <div className="auth-error">{error}</div>}
 
-            <div className="col-12 d-flex gap-2">
-              <button className="btn btn-primary" disabled={loading}>
+            <div className="auth-actions">
+              <button className="btn btn-primary-soft auth-main-btn" disabled={loading}>
                 {loading ? "Creando cuenta..." : "Crear cuenta"}
               </button>
 
               <button
                 type="button"
-                className="btn btn-secondary"
+                className="btn auth-secondary-btn"
                 onClick={() => nav("/login")}
                 disabled={loading}
               >

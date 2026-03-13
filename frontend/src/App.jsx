@@ -25,6 +25,7 @@ import ReportesRecoleccion from "./pages/ReportesRecoleccion";
 import Usuarios from "./pages/Usuarios";
 import { useAuth } from './auth/AuthContext.jsx'
 import { getDefaultRouteByRole } from './utils/roleUtils.js'
+import Reportes from "./pages/Reportes";
 
 function RoleHomeRedirect() {
   const { user } = useAuth()
@@ -42,6 +43,14 @@ export default function App() {
         <Route path="/portal-rutas" element={<PortalRutas />} />
         <Route path="/seguimiento-denuncia" element={<SeguimientoDenuncia />} />
         <Route path="/seguimiento" element={<Seguimiento />} />
+        <Route
+          path="/reportes"
+          element={
+            <ProtectedRoute roles={["administrador", "coordinador", "auditor"]}>
+              <Reportes />
+            </ProtectedRoute>
+          }
+        />
 
         <Route
           path="/"

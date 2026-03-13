@@ -1,96 +1,171 @@
-import { Link, useNavigate, NavLink } from 'react-router-dom'
-import { useAuth } from '../../auth/AuthContext.jsx'
-import { api } from '../../api/axios.js'
-import { hasRole } from '../../utils/roleUtils.js'
+import { Link, useNavigate, NavLink } from "react-router-dom";
+import { useAuth } from "../../auth/AuthContext.jsx";
+import { api } from "../../api/axios.js";
+import { hasRole } from "../../utils/roleUtils.js";
+import { useState } from "react";
 
 export default function Navbar() {
-  const { isAuthed, logout, user } = useAuth()
-  const nav = useNavigate()
+  const { isAuthed, logout, user } = useAuth();
+  const nav = useNavigate();
+
+  const [openMenu, setOpenMenu] = useState(null);
 
   const handleLogout = async () => {
     try {
-      await api.post('/logout')
+      await api.post("/logout");
     } catch (e) {
-      console.log('Logout error:', e?.response?.data || e.message)
+      console.log("Logout error:", e?.response?.data || e.message);
     } finally {
-      logout()
-      nav('/login')
+      logout();
+      nav("/login");
     }
-  }
+  };
+
+  const toggleMenu = (menu) => {
+    setOpenMenu((prev) => (prev === menu ? null : menu));
+  };
+
+  const closeMenus = () => {
+    setOpenMenu(null);
+  };
 
   return (
-    <div style={{ borderBottom: '1px solid rgba(255,255,255,0.12)' }}>
-      <div
-        className="container"
-        style={{
-          display: 'flex',
-          gap: 12,
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
-        <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
-          <strong>ResiduosMuni</strong>
+    <header className="topbar">
+      <div className="container topbar-inner">
+        <div className="brand-area">
+          <NavLink to={isAuthed ? "/dashboard" : "/portal-rutas"} className="brand-link" onClick={closeMenus}>
+            <span className="brand-badge">RM</span>
+            <span>ResiduosMuni</span>
+          </NavLink>
+        </div>
 
-          <NavLink to="/portal-rutas">Portal Rutas</NavLink>
+        <nav className="nav-main">
+          <NavLink to="/portal-rutas" className="nav-item" onClick={closeMenus}>
+            Portal Rutas
+          </NavLink>
 
           {isAuthed && (
             <>
               {hasRole(user, ["administrador", "coordinador"]) && (
                 <>
-                  <NavLink to="/dashboard">Dashboard</NavLink>
-                  <NavLink to="/mapa">Mapa</NavLink>
-                  <NavLink to="/zonas">Zonas</NavLink>
-                  <NavLink to="/rutas">Rutas</NavLink>
-                  <NavLink to="/camiones">Camiones</NavLink>
-                  <NavLink to="/asignaciones-ruta">Asignaciones</NavLink>
-                  <NavLink to="/recolecciones">Recolecciones</NavLink>
-                  <NavLink to="/monitoreo-asignaciones">Monitoreo</NavLink>
+                  <NavLink to="/dashboard" className="nav-item" onClick={closeMenus}>
+                    Dashboard
+                  </NavLink>
+
+                  <div className="nav-dropdown">
+                    <button
+                      type="button"
+                      className={`nav-item nav-button ${openMenu === "operaciones" ? "active" : ""}`}
+                      onClick={() => toggleMenu("operaciones")}
+                    >
+                      Operaciones
+                    </button>
+
+                    {openMenu === "operaciones" && (
+                      <div className="dropdown-panel">
+                        <NavLink to="/mapa" className="dropdown-link" onClick={closeMenus}>
+                          Mapa general
+                        </NavLink>
+                        <NavLink to="/zonas" className="dropdown-link" onClick={closeMenus}>
+                          Zonas
+                        </NavLink>
+                        <NavLink to="/rutas" className="dropdown-link" onClick={closeMenus}>
+                          Rutas
+                        </NavLink>
+                        <NavLink to="/camiones" className="dropdown-link" onClick={closeMenus}>
+                          Camiones
+                        </NavLink>
+                        <NavLink to="/asignaciones-ruta" className="dropdown-link" onClick={closeMenus}>
+                          Asignaciones
+                        </NavLink>
+                        <NavLink to="/recolecciones" className="dropdown-link" onClick={closeMenus}>
+                          Recolecciones
+                        </NavLink>
+                        <NavLink to="/monitoreo-asignaciones" className="dropdown-link" onClick={closeMenus}>
+                          Monitoreo
+                        </NavLink>
+                      </div>
+                    )}
+                  </div>
                 </>
               )}
 
               {hasRole(user, ["administrador", "operador"]) && (
-                <>
-                  <NavLink to="/tipos-material">Tipos Material</NavLink>
-                  <NavLink to="/contenedores">Contenedores</NavLink>
-                  <NavLink to="/operacion-reciclaje">Operación Reciclaje</NavLink>
-                </>
+                <div className="nav-dropdown">
+                  <button
+                    type="button"
+                    className={`nav-item nav-button ${openMenu === "reciclaje" ? "active" : ""}`}
+                    onClick={() => toggleMenu("reciclaje")}
+                  >
+                    Reciclaje
+                  </button>
+
+                  {openMenu === "reciclaje" && (
+                    <div className="dropdown-panel">
+                      <NavLink to="/tipos-material" className="dropdown-link" onClick={closeMenus}>
+                        Tipos de material
+                      </NavLink>
+                      <NavLink to="/contenedores" className="dropdown-link" onClick={closeMenus}>
+                        Contenedores
+                      </NavLink>
+                      <NavLink to="/operacion-reciclaje" className="dropdown-link" onClick={closeMenus}>
+                        Operación reciclaje
+                      </NavLink>
+                    </div>
+                  )}
+                </div>
               )}
 
               {hasRole(user, ["administrador", "coordinador", "ciudadano"]) && (
-                <>
-                  <NavLink to="/denuncias">Denuncias</NavLink>
-                  <NavLink to="/seguimiento">Seguimiento</NavLink>
-                </>
+                <div className="nav-dropdown">
+                  <button
+                    type="button"
+                    className={`nav-item nav-button ${openMenu === "denuncias" ? "active" : ""}`}
+                    onClick={() => toggleMenu("denuncias")}
+                  >
+                    Denuncias
+                  </button>
+
+                  {openMenu === "denuncias" && (
+                    <div className="dropdown-panel">
+                      <NavLink to="/denuncias" className="dropdown-link" onClick={closeMenus}>
+                        Gestión de denuncias
+                      </NavLink>
+                      <NavLink to="/seguimiento" className="dropdown-link" onClick={closeMenus}>
+                        Seguimiento
+                      </NavLink>
+                    </div>
+                  )}
+                </div>
               )}
 
               {hasRole(user, ["administrador", "coordinador", "auditor"]) && (
-                <>
-                  <NavLink to="/reportes-reciclaje">Reportes Reciclaje</NavLink>
-                  <NavLink to="/reportes-denuncias">Reportes Denuncias</NavLink>
-                  <NavLink to="/reportes-recoleccion">Reportes Recolección</NavLink>
-                </>
+                <NavLink to="/reportes" className="nav-item" onClick={closeMenus}>
+                  Reportes
+                </NavLink>
               )}
 
               {hasRole(user, ["administrador"]) && (
-                <NavLink to="/usuarios">Usuarios</NavLink>
+                <NavLink to="/usuarios" className="nav-item" onClick={closeMenus}>
+                  Usuarios
+                </NavLink>
               )}
             </>
           )}
-        </div>
+        </nav>
 
-        <div>
+        <div className="topbar-actions">
           {isAuthed ? (
-            <button className="btn" onClick={handleLogout}>
+            <button className="btn btn-danger-soft" onClick={handleLogout}>
               Cerrar sesión
             </button>
           ) : (
-            <Link className="btn" to="/login">
+            <Link className="btn btn-primary-soft topbar-login-btn" to="/login">
               Iniciar sesión
             </Link>
           )}
         </div>
       </div>
-    </div>
-  )
+    </header>
+  );
 }
