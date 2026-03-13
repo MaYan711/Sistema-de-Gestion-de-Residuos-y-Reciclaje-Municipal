@@ -124,9 +124,11 @@ function OperacionReciclaje() {
     } catch (error) {
       console.error(error);
       const mensaje =
-        error?.response?.data?.errors?.id_vaciado?.[0] ||
-        error?.response?.data?.message ||
-        "No se pudo completar el vaciado";
+      error?.response?.data?.errors?.id_contenedor?.[0] ||
+      error?.response?.data?.errors?.id_usuario?.[0] ||
+      error?.response?.data?.errors?.fecha_prog?.[0] ||
+      error?.response?.data?.message ||
+      "No se pudo programar el vaciado";
       alert(mensaje);
     } finally {
       setLoading(false);

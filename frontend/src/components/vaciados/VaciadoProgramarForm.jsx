@@ -18,9 +18,16 @@ function VaciadoProgramarForm({ contenedores, usuario, onSubmit, loading }) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    const idUsuario = Number(usuario?.id_usuario ?? usuario?.id);
+
+    if (!idUsuario) {
+      alert("No se pudo identificar el usuario actual");
+      return;
+    }
+
     onSubmit({
       id_contenedor: Number(form.id_contenedor),
-      id_usuario: Number(usuario.id),
+      id_usuario: idUsuario,
       fecha_prog: form.fecha_prog,
       observaciones: form.observaciones.trim() || null,
     });
