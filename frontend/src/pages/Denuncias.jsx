@@ -31,12 +31,16 @@ export default function Denuncias() {
   const [editingId, setEditingId] = useState(null);
   const [foto, setFoto] = useState(null);
   const navigate = useNavigate();
-
   const { user } = useAuth();
 
-  const rolNombre = String(
-    user?.rol_nombre || user?.rol || ""
-  ).toLowerCase();
+  const rolNombre = String(user?.rol_nombre || user?.rol || "").toLowerCase();
+
+  const esCiudadano = rolNombre === "ciudadano";
+  const puedeGestionarDenuncias = rolNombre === "administrador" || rolNombre === "coordinador";
+  const puedeAsignarCuadrilla = rolNombre === "administrador" || rolNombre === "coordinador";
+  const puedeEliminarDenuncia = rolNombre === "administrador" || rolNombre === "coordinador";
+  const puedeEditarDenuncia = rolNombre === "administrador" || rolNombre === "coordinador";
+  const puedeCambiarEstado = rolNombre === "administrador" || rolNombre === "coordinador";
 
   const puedeSubirAntesDespues =
     rolNombre === "administrador" || rolNombre === "coordinador";
@@ -407,21 +411,41 @@ export default function Denuncias() {
                     </div>
 
                     <div style={{ display: "flex", gap: 10, marginTop: 8, alignItems: "center", flexWrap: "wrap" }}>
-                      <select value={d.estado} onChange={(e) => changeEstado(denunciaId, e.target.value)}>
-                        {ESTADOS.map((e) => (
-                          <option key={e} value={e}>
-                            {e}
-                          </option>
-                        ))}
-                      </select>
+                      {puedeCambiarEstado ? (
+                        <select value={d.estado} onChange={(e) => changeEstado(denunciaId, e.target.value)}>
+                          {ESTADOS.map((e) => (
+                            <option key={e} value={e}>
+                              {e}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <div
+                          style={{
+                            padding: "8px 12px",
+                            borderRadius: 10,
+                            background: "rgba(255,255,255,0.08)",
+                            border: "1px solid rgba(255,255,255,0.12)",
+                            fontSize: 14,
+                            fontWeight: 600,
+                            textTransform: "capitalize",
+                          }}
+                        >
+                          Estado: {String(d.estado || "").replaceAll("_", " ")}
+                        </div>
+                      )}
 
-                      <button className="btn" type="button" onClick={() => openEdit(d)}>
-                        Editar
-                      </button>
+                      {puedeEditarDenuncia && (
+                        <button className="btn" type="button" onClick={() => openEdit(d)}>
+                          Editar
+                        </button>
+                      )}
 
-                      <button className="btn" type="button" onClick={() => openAssign(d)}>
-                        Asignar cuadrilla
-                      </button>
+                      {puedeAsignarCuadrilla && (
+                        <button className="btn" type="button" onClick={() => openAssign(d)}>
+                          Asignar cuadrilla
+                        </button>
+                      )}
 
                       <button className="btn" type="button" onClick={() => abrirFotos(d)}>
                         Fotos
@@ -437,9 +461,11 @@ export default function Denuncias() {
                         Ver seguimiento
                       </button>
 
-                      <button className="btn" type="button" onClick={() => remove(denunciaId, d.codigo_segui)}>
-                        Eliminar
-                      </button>
+                      {puedeEliminarDenuncia && (
+                        <button className="btn" type="button" onClick={() => remove(denunciaId, d.codigo_segui)}>
+                          Eliminar
+                        </button>
+                      )}
                     </div>
                   </div>
                 );
